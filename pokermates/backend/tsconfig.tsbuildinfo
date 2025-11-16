@@ -1,0 +1,61 @@
+{
+  "program": {
+    "fileInfos": {
+      "./src/db/db.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      },
+      "./src/server.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      },
+      "./src/services/gameService.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      },
+      "./src/services/roomService.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      },
+      "./src/services/socketService.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      },
+      "./src/utils/roomCodeGenerator.ts": {
+        "version": "1.0.0",
+        "signature": 0,
+        "affectsGlobalScope": true
+      }
+    },
+    "options": {
+      "target": "ES2022",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "esModuleInterop": true,
+      "strict": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "sourceMap": true,
+      "declaration": true,
+      "resolveJsonModule": true,
+      "allowSyntheticDefaultImports": true,
+      "noUncheckedIndexedAccess": true,
+      "exactOptionalPropertyTypes": true,
+      "jsx": "react-jsx",
+      "verbatimModuleSyntax": true,
+      "isolatedModules": true,
+      "noUncheckedSideEffectImports": true,
+      "moduleDetection": "force"
+    },
+    "referencedMap": {},
+    "exportedModulesMap": {}
+  },
+  "version": "5.0.4"
+}

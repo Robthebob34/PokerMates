@@ -1,0 +1,130 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String?
+  chips        Int      @default(10000)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  playerInRooms RoomPlayer[]
+  playerHands   PlayerHand[]
+}
+
+model Room {
+  id          String      @id @default(uuid())
+  code        String      @unique
+  name        String
+  maxPlayers  Int         @default(8)
+  smallBlind  Int         @default(10)
+  bigBlind    Int         @default(20)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  players     RoomPlayer[]
+  games       Game[]
+}
+
+model RoomPlayer {
+  id        String   @id @default(uuid())
+  userId    String
+  roomId    String
+  chips     Int      @default(1000)
+  buyIn     Int      @default(0)
+  isHost    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  playerHands PlayerHand[]
+  
+  @@unique([userId, roomId])
+}
+
+model Game {
+  id          String      @id @default(uuid())
+  roomId      String
+  status      GameStatus  @default(WAITING)
+  smallBlind  Int         @default(10)
+  bigBlind    Int         @default(20)
+  currentTurn String?     // socketId of the player whose turn it is
+  pot         Int         @default(0)
+  currentBet  Int         @default(0)
+  communityCards String    @default("[]") // Stored as JSON string
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  room       Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  hands      Hand[]
+  
+  @@index([roomId])
+}
+
+model Hand {
+  id        String   @id @default(uuid())
+  gameId    String
+  status    HandStatus @default(PRE_FLOP)
+  winnerId  String?    // roomPlayerId of the winner
+  winningHand String?  // Description of the winning hand (e.g., "Two Pair")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  // Relations
+  game       Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  playerHands PlayerHand[]
+  
+  @@index([gameId])
+}
+
+model PlayerHand {
+  id          String   @id @default(uuid())
+  handId      String
+  playerId    String   // roomPlayerId
+  cards       String   @default("[]") // Stored as JSON string
+  isFolded    Boolean  @default(false)
+  betAmount   Int      @default(0)
+  isAllIn     Boolean  @default(false)
+  handRank    Int?     // Numeric rank of the hand (for comparison)
+  handName    String?  // Name of the hand (e.g., "Flush")
+  
+  // Relations
+  hand       Hand      @relation(fields: [handId], references: [id], onDelete: Cascade)
+  player     RoomPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  
+  @@unique([handId, playerId])
+}
+
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum HandStatus {
+  PRE_FLOP
+  FLOP
+  TURN
+  RIVER
+  SHOWDOWN
+  COMPLETED
+}
